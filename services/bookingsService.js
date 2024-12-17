@@ -15,7 +15,7 @@ export const allBookings = async () => {
     try {
         return await Bookings.find();
     } catch (error) {
-        throw createHttpError(`Error fetching bookings: ${error.message}`);
+        throw createHttpError(`${error.message}`);
     }
 };
 
@@ -31,9 +31,9 @@ export const bookingById = async (id) => {
 
 export const bookingUpdate = async (id, data) => {
     try {
-        const updatedBooking = await Bookings.findByIdAndUpdate(id, data, { new: true });
-        if (!updatedBooking) throw createHttpError("Booking not found");
-        return updatedBooking;
+        const booking = await Bookings.findById(id);
+        if (!booking) throw createHttpError(404, "Booking not found");
+        return await Bookings.findByIdAndUpdate(id, data, {new: true});
     } catch (error) {
         throw createHttpError(`Error updating booking: ${error.message}`);
     }
@@ -42,7 +42,7 @@ export const bookingUpdate = async (id, data) => {
 export const bookingDelete = async (id) => {
     try {
         const deletedBooking = await Bookings.findByIdAndDelete(id);
-        if (!deletedBooking) createHttpError("Booking not found");
+        if (!deletedBooking) throw createHttpError(404, "Booking not found");
         return deletedBooking;
     } catch (error) {
         throw createHttpError(`Error deleting booking: ${error.message}`);
